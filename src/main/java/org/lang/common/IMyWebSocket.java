@@ -129,4 +129,11 @@ public interface IMyWebSocket {
      * @return 连接数
      */
     int getConnectionCount();
+
+    /**
+     * 关闭指定用户的websocket连接
+     *
+     * @param userId
+     */
+    void closeConnection(String userId);
 }

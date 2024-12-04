@@ -165,4 +165,26 @@ public class MyWebSocketImpl implements IMyWebSocket {
     public int getConnectionCount() {
         return connectionCount.get();
     }
+
+    @Override
+    public void closeConnection(String userId) {
+        Optional<WebSocketSession> userSession = sessions.stream().filter(session -> {
+            if (!session.isOpen()) {
+                return false;
+            }
+            Map<String, Object> attributes = session.getAttributes();
+            if (!attributes.containsKey("uid")) {
+                return false;
+            }
+            String uid = (String) attributes.get("uid");
+            return uid.equals(userId);
+        }).findFirst();
+        if (userSession.isPresent()) {
+            try {
+                userSession.get().close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
