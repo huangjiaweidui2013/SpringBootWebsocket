@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button onclick="closeSse()">关闭连接</button>
+<div id="message"></div>
+<script>
+    let eventSource = null;
+
+    // 用时间戳模拟登录用户
+    const userId = new Date().getTime();
+
+    if (window.EventSource) {
+        //创建sse
+         eventSource = new EventSource(`/sse/createSseConnect?clientId=` + userId);
+
+        /**
+         * 连接一旦建立，就会触发open事件
+         * 另一种写法：
+         *   source.addEventListener('open', function (e) {
+         *
+         *   }, false);
+         */
+        eventSource.onopen = function (event) {
+            setMessageInnerHTML("sse连接成功");
+        }
+
+        /**
+         * 客户端收到服务器发来的数据
+         * 另一种写法：
+         *   source.addEventListener('message', function (e) {
+         *      e.data;
+         *   });
+         */
+        eventSource.onmessage = function (event) {
+            if(event.data){
+                setMessageInnerHTML(event.data);
+            }
+        }
+
+        /**
+         * 如果发生通信错误（比如连接中断），就会触发error事件
+         * 或者：
+         * 另一种写法：
+         *   source.addEventListener('error', function (e) {
+         *       if (e.readyState === EventSource.CLOSED) {
+         *
+         *       } else {
+         *           console.log(e);
+         *       }
+         *   }, false);
+         */
+        eventSource.onerror = (error) => {
+            setMessageInnerHTML("sse连接失败");
+        };
+    } else {
+        setMessageInnerHTML("你的浏览器不支持SSE");
+    }
+
+    // 监听窗口关闭事件，主动去关闭sse连接，如果服务端设置永不过期，浏览器关闭后手动清理服务端数据
+    window.onbeforeunload = function () {
+        closeSse();
+    };
+
+    // 关闭Sse连接
+    function closeSse() {
+        eventSource.close();
+        const httpRequest = new XMLHttpRequest();
+<!--        httpRequest.open('GET', 'http://localhost:8080/sse/closeSseConnect/?clientId=e410d4c1d71c469b8d719de5d39783b7', true);-->
+        httpRequest.open('GET', '/sse/closeSseConnect/?clientId=' + userId, true);
+        httpRequest.send();
+        console.log("close");
+    }
+
+    // 将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+</script>
+</body>
+</html>

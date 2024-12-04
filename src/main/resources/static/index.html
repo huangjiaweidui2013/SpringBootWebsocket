@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hello websocket</title>
+    <link rel="stylesheet" href="bootstrap.css">
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <label for="brokerUrl">websocket 连接url：</label>
+            <input type="text" id="brokerUrl" class="form-control" value="ws://localhost:4444/ws/message">
+        </div>
+        <div class="col-md-6">
+            <label for="to">docId:</label>
+            <input type="text" id="docId" class="form-control" value="123456">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="token">发信人（token）：</label>
+            <input type="text" id="token" class="form-control" value="100">
+        </div>
+        <div class="col-md-6">
+            <label for="to">收信人 ：</label>
+            <input type="text" id="to" class="form-control" value="101">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">websocket connect:</label>
+                    <button id="connect" calss="btn btn-default" type="submit">connect</button>
+                    <button id="disconnect" calss="btn btn-default" type="submit" disabled="disabled">disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="content">message content:</label>
+                    <input type="text" id="content" class="form-control" placeholder="content of message">
+                </div>
+                <button id="send" calss="btn btn-default" type="submit">send</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="content2">二进制消息内容:</label>
+                    <input type="text" id="content2" class="form-control" placeholder="6">
+                </div>
+                <button id="send2" calss="btn btn-default" type="submit">send binary data</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Message</th>
+                </tr>
+                </thead>
+                <tbody id="message">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

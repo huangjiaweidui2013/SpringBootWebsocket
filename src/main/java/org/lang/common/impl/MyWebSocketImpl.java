@@ -1,8 +1,11 @@
 package org.lang.common.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lang.common.IMyWebSocket;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -17,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 @Slf4j
 public class MyWebSocketImpl implements IMyWebSocket {
     /**
@@ -49,10 +53,12 @@ public class MyWebSocketImpl implements IMyWebSocket {
         log.info("{} received a message：{}",
                 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), message);
         try {
-            sendMessage(session, "后端返回一条消息，时间是：" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+            sendMessage(session, "后端返回一条消息，时间：" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) +
+                    ", 消息内容：" + message);
 
             //给另外一个用户发送消息
-            sendMessage("101", "给另外一个用户发送一条消息，时间是：" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+            sendMessage("101", "给其他用户发送一条消息，时间：" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+                    + ", 消息内容：" + message);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -186,5 +192,23 @@ public class MyWebSocketImpl implements IMyWebSocket {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Scheduled(cron = "0/10 * * * * *")
+    public void ping() {
+        if (CollUtil.isNotEmpty(sessions)) {
+            for (WebSocketSession session : sessions) {
+                if (session.isOpen()) {
+                    Map<String, Object> attributes = session.getAttributes();
+                    String uid = (String) attributes.get("uid");
+                    try {
+                        sendMessage(uid, "PING");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
     }
 }

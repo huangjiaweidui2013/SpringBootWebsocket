@@ -1,7 +1,5 @@
 package org.lang.config;
 
-import org.lang.common.IMyWebSocket;
-import org.lang.common.impl.MyWebSocketImpl;
 import org.lang.handler.DefaultWebSocketHandler;
 import org.lang.interceptor.WebSocketInterceptor;
 import org.springframework.context.annotation.Bean;
@@ -20,10 +18,10 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         return new DefaultWebSocketHandler();
     }
 
-    @Bean
-    public IMyWebSocket myWebSocket() {
-        return new MyWebSocketImpl();
-    }
+//    @Bean
+//    public IMyWebSocket myWebSocket() {
+//        return new MyWebSocketImpl();
+//    }
 
     @Bean
     public WebSocketInterceptor webSocketInterceptor() {
@@ -35,7 +33,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         registry.addHandler(defaultWebSocketHandler(), "ws/message")
                 .addInterceptors(webSocketInterceptor())
                 .setAllowedOrigins("*");
-        
+
     }
 }
 
