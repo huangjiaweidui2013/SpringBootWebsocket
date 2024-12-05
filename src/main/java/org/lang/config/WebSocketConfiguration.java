@@ -23,15 +23,15 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 //        return new MyWebSocketImpl();
 //    }
 
-    @Bean
-    public WebSocketInterceptor webSocketInterceptor() {
-        return new WebSocketInterceptor();
-    }
+//    @Bean
+//    public WebSocketInterceptor webSocketInterceptor() {
+//        return new WebSocketInterceptor();
+//    }
 
     @Override
     public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry registry) {
         registry.addHandler(defaultWebSocketHandler(), "ws/message")
-                .addInterceptors(webSocketInterceptor())
+                .addInterceptors(new WebSocketInterceptor())
                 .setAllowedOrigins("*");
 
     }

@@ -7,8 +7,10 @@ import org.lang.common.IMyWebSocket;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
+import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -33,11 +35,19 @@ public class MyWebSocketImpl implements IMyWebSocket {
      */
     private final CopyOnWriteArraySet<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
 
+    private ConcurrentWebSocketSessionDecorator sessionDecorator(WebSocketSession session) {
+        return new ConcurrentWebSocketSessionDecorator(session, 10000, 65536);
+    }
+
+
     @Override
     public void handleOpen(WebSocketSession session) {
         sessions.add(session);
+        Map<String, Object> attributes = session.getAttributes();
+        StringBuilder sb = new StringBuilder();
+        attributes.forEach((k, v) -> sb.append(k).append(" == ").append(v.toString()).append(";"));
         int count = connectionCount.incrementAndGet();
-        log.info("a new connection opened，current online count：{}", count);
+        log.info("a new connection opened，current online count：{}, 连接的属性: {}", count, sb);
     }
 
     @Override
@@ -117,7 +127,7 @@ public class MyWebSocketImpl implements IMyWebSocket {
             return uid.equals(userId);
         }).findFirst();
         if (userSession.isPresent()) {
-            userSession.get().sendMessage(binaryMessage);
+            sessionDecorator(userSession.get()).sendMessage(binaryMessage);
         }
     }
 
@@ -128,12 +138,14 @@ public class MyWebSocketImpl implements IMyWebSocket {
 
     @Override
     public void sendMessage(WebSocketSession session, TextMessage message) throws IOException {
-        session.sendMessage(message);
+//        session.sendMessage(message);
+        sessionDecorator(session).sendMessage(message);
     }
 
     @Override
     public void sendMessage(WebSocketSession session, BinaryMessage binaryMessage) throws IOException {
-        session.sendMessage(binaryMessage);
+//        session.sendMessage(binaryMessage);
+        sessionDecorator(session).sendMessage(binaryMessage);
     }
 
     @Override
@@ -152,7 +164,8 @@ public class MyWebSocketImpl implements IMyWebSocket {
             if (!session.isOpen()) {
                 continue;
             }
-            session.sendMessage(message);
+//            session.sendMessage(message);
+            sessionDecorator(session).sendMessage(message);
         }
     }
 
@@ -202,7 +215,8 @@ public class MyWebSocketImpl implements IMyWebSocket {
                     Map<String, Object> attributes = session.getAttributes();
                     String uid = (String) attributes.get("uid");
                     try {
-                        sendMessage(uid, "PING");
+//                        sendMessage(uid, "PING");
+                        session.sendMessage(new PingMessage(ByteBuffer.wrap(new byte[0])));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

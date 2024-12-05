@@ -1,11 +1,14 @@
 package org.lang.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.lang.common.IMyWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.socket.*;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-public class DefaultWebSocketHandler implements WebSocketHandler {
+@Slf4j
+public class DefaultWebSocketHandler extends AbstractWebSocketHandler {
 
     @Autowired
     private IMyWebSocket myWebSocket;
@@ -17,6 +20,8 @@ public class DefaultWebSocketHandler implements WebSocketHandler {
      */
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) {
+        session.setTextMessageSizeLimit(1024 * 1024);
+        session.setBinaryMessageSizeLimit(1024 * 1024);
         myWebSocket.handleOpen(session);
     }
 
@@ -68,7 +73,22 @@ public class DefaultWebSocketHandler implements WebSocketHandler {
      */
     @Override
     public boolean supportsPartialMessages() {
-        return false;
+        return super.supportsPartialMessages();
+    }
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        super.handleTextMessage(session, message);
+    }
+
+    @Override
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
+        super.handleBinaryMessage(session, message);
+    }
+
+    @Override
+    protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
+        super.handlePongMessage(session, message);
     }
 }
 

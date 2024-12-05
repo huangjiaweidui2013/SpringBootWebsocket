@@ -6,7 +6,7 @@ function init() {
     brokerUrl = $('#brokerUrl').val();
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
-        ws = new WebSocket(brokerUrl + "?uid=" + $('#token').val() + "&docId="+ $('#docId').val());
+        ws = new WebSocket(brokerUrl + "?uid=" + $('#token').val() + "&docId="+ $('#docId').val() +"&source=1");
     }
     else {
         alert('当前浏览器 Not support websocket')
