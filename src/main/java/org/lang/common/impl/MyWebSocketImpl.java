@@ -16,9 +16,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,6 +36,8 @@ public class MyWebSocketImpl implements IMyWebSocket {
      * 线程安全的无序集合（存储会话）
      */
     private final CopyOnWriteArraySet<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
+
+    private final ConcurrentHashMap<String, List<WebSocketSession>> sessionMap = new ConcurrentHashMap<>();
 
     private ConcurrentWebSocketSessionDecorator sessionDecorator(WebSocketSession session) {
         return new ConcurrentWebSocketSessionDecorator(session, 10000, 65536);
@@ -109,7 +113,7 @@ public class MyWebSocketImpl implements IMyWebSocket {
             return uid.equals(userId);
         }).findFirst();
         if (userSession.isPresent()) {
-            userSession.get().sendMessage(message);
+            sessionDecorator(userSession.get()).sendMessage(message);
         }
     }
 

@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.lang.common.IMyWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+@Component
 @Slf4j
 public class DefaultWebSocketHandler extends AbstractWebSocketHandler {
 
