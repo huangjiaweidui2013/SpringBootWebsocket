@@ -73,6 +73,9 @@ public class MyWebSocketImpl implements IMyWebSocket {
             //给另外一个用户发送消息
             sendMessage("101", "给其他用户发送一条消息，时间：" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
                     + ", 消息内容：" + message);
+
+            BinaryMessage binaryMessage = new BinaryMessage(message.getBytes());
+            sendMessage("101", binaryMessage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

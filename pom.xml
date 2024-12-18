@@ -49,6 +49,13 @@
             <version>5.8.25</version>
         </dependency>
 
+        <!-- 方便使用java代码作为客户端快速连接websocket接口 -->
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+
     </dependencies>
 
     <build>

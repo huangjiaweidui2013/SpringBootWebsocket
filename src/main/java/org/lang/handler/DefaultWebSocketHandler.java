@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+import java.nio.ByteBuffer;
+
 @Component
 @Slf4j
 public class DefaultWebSocketHandler extends AbstractWebSocketHandler {
@@ -90,7 +92,8 @@ public class DefaultWebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
-        super.handlePongMessage(session, message);
+        session.sendMessage(new PongMessage(ByteBuffer.wrap("PONG".getBytes())));
+//        super.handlePongMessage(session, message);
     }
 }
 
